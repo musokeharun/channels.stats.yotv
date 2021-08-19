@@ -1,68 +1,52 @@
 import React, {Fragment, useEffect, useState} from "react";
 import PageHeader from "../../layout/header/pageHeader";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchData, fetchEpg, fetchMain, selectEpg, selectMain, selectMeta} from "./funnelSlice";
+import {fetchData, fetchEpg, fetchMain, selectMain, selectMeta, selectSelectedRange} from "./funnelSlice";
 import {DateTime} from "luxon";
 import Area from "../../common/charts/Area";
 import CountUp from "react-countup";
 import classNames from "classnames";
-import {createToast} from "../../utils/toasts";
 import MostDay from "./mostDay";
 import MostHour from "./MostHour";
-import {getCurrentUser} from "../../services/user";
+import _ from "lodash";
 
-export default function Funnel({channels}) {
-    const [date, setDate] = useState("")
+export default function Funnel() {
     const dispatch = useDispatch()
     const dateTime = DateTime.now();
     const [selectedIndex, setSelectedIndex] = useState(null);
-    const toast = createToast();
     const main = useSelector(selectMain);
-    const epg = useSelector(selectEpg);
     const meta = useSelector(selectMeta);
-    let user = getCurrentUser();
+    let dateSelected = useSelector(selectSelectedRange);
 
-    function getDates(date) {
-        const [start, end] = date;
+    console.log("Date Selected", dateSelected);
 
-        let startDate = DateTime.fromJSDate(start);
-        let endDate = DateTime.fromJSDate(end);
-        return {startDate, endDate};
-    }
+    const onDateRangeChangeListener = (startDate, endDate) => {
+        setSelectedIndex(null);
+        dispatch(
+            fetchMain({
+                from: startDate,
+                to: endDate,
+                type: "stream"
+            }))
 
-    const onDateRangeChangeListener = (date) => {
-        if (Array.isArray(date) && date.length > 1) {
-            let {startDate, endDate} = getDates(date);
-
-            setSelectedIndex(null);
-            dispatch(
-                fetchMain({
-                    from: startDate.toMillis(),
-                    to: endDate.toMillis(),
-                    type: "stream"
-                }))
-
-            dispatch(
-                fetchEpg({
-                    time: startDate.toMillis(),
-                    // to: endDate.toMillis(),
-                })
-            )
-            console.log("Dates", startDate, endDate);
-
-        }
-        setDate(date);
+        dispatch(
+            fetchEpg({
+                time: startDate,
+                // to: endDate.toMillis(),
+            })
+        )
+        console.log("Dates", startDate, endDate);
     }
 
     useEffect(() => {
-        onDateRangeChangeListener([dateTime.startOf("day").toJSDate(), dateTime.endOf("day").toJSDate()])
+        onDateRangeChangeListener(dateTime.startOf("day").toMillis(), dateTime.endOf("day").toMillis())
     }, [])
 
-    // useEffect(() => {
-    //     if (channels && channels.length && date && date.length > 1) {
-    //         onDateRangeChangeListener(date);
-    //     }
-    // }, [channels])
+    useEffect(() => {
+        if (dateSelected && dateSelected.length > 1) {
+            onDateRangeChangeListener(dateSelected[0], dateSelected[1]);
+        }
+    }, [dateSelected])
 
     function sumArrays(...arrays) {
         // console.log("Arrays", arrays);
@@ -75,7 +59,7 @@ export default function Funnel({channels}) {
 
         if (!main || !main.length) return {};
 
-        let series = main.map((item, index) => {
+        let series = main.map((item) => {
             return {
                 name: item.key,
                 data: item.values.map(v => v.value)
@@ -90,8 +74,6 @@ export default function Funnel({channels}) {
         let maxIndex = 0;
         let minVar = 0
         let maxVar = 0
-
-        const r = {};
         let total = sumArrays.apply(null, [...series.map(serie => serie.data)]).reduce((acc, value, index) => {
             if (index === 0) {
                 maxVar = value;
@@ -149,13 +131,13 @@ export default function Funnel({channels}) {
     let total = keysFromMain.length && keysFromMain.reduce((a, e) => a + e.total, 0)
 
     // AS THE QUERY
-    let data = getMainDataFormatted(main, selectedIndex, date);
+    let data = getMainDataFormatted(main, selectedIndex);
     // DAILY
 
     console.log(selectedIndex, data, "Data", "Total", total);
     return (
         <Fragment>
-            <PageHeader label={"Funnel Analysis"} dateValue={date} setDate={(e) => onDateRangeChangeListener(e)}/>
+            <PageHeader label={"Funnel Analysis"} withDate={true}/>
 
             <div className="row g-3 mb-3">
                 <div className="col-12">
@@ -164,7 +146,7 @@ export default function Funnel({channels}) {
 
                             <ul className="nav nav-tabs border-0 flex-nowrap" role="tablist">
                                 <li className="nav-item me-2" role="presentation">
-                                    <a onClick={e => setSelectedIndex(null)}
+                                    <a onClick={() => setSelectedIndex(null)}
                                        className={classNames("nav-link mb-0  py-1 px-2", {active: selectedIndex === null})}>
                                         <div className="p-0 m-0">
                                             <h6 className="text-dark fs--2 text-nowrap m-0">All</h6>
@@ -183,7 +165,7 @@ export default function Funnel({channels}) {
                                             <a className={classNames("nav-link mb-0 py-1 px-2", {active: selectedIndex === index})}
                                                onClick={() => setSelectedIndex(index)}>
                                                 <div className="p-0 m-0">
-                                                    <h6 className="text-dark fs--2 text-nowrap m-0">{key.key}</h6>
+                                                    <h6 className="text-dark fs--2 text-nowrap m-0">{_.capitalize(key.key.toLowerCase())}</h6>
                                                     <h5 className="text-dark m-0">
                                                         <CountUp end={key.total} separator=","/>
                                                     </h5>
@@ -206,7 +188,7 @@ export default function Funnel({channels}) {
                                                     Total
                                                 </p>
                                                 <h2 className="text-primary">
-                                                    <CountUp end={!!data.total && data.total} separator={","}/>
+                                                    <CountUp end={data.total || 0} separator={","}/>
                                                 </h2>
                                             </div>
                                         </div>
@@ -281,7 +263,7 @@ export default function Funnel({channels}) {
                         <div className="card-header pb-0">
                             <div className="row flex-between-center g-card">
                                 <div className="col-auto">
-                                    <h6>Day</h6>
+                                    <h6>Hour</h6>
                                 </div>
                             </div>
                         </div>

@@ -8,6 +8,12 @@ import {Link, NavLink} from "react-router-dom";
 import logo from "../assets/logo.png";
 
 const Sidebar = () => {
+
+    const contactAdmin = e => {
+        e.preventDefault();
+        alert("Please contact the Administration at admin@yotvchannels.com.")
+    }
+
     let darkerBackgroundColor = "#391C4F";
     let cogStyles = {
         backgroundColor: `${darkerBackgroundColor} !important`,
@@ -17,7 +23,7 @@ const Sidebar = () => {
         right: "20px"
     };
     return (
-        <nav id="sidebar" className="sidebar"
+        <nav id="sidebar" className="sidebar shadow-lg z-5"
              style={{
                  backgroundColor: darkerBackgroundColor,
                  minHeight: "100vh",
@@ -63,13 +69,13 @@ const Sidebar = () => {
 
                 <li className="sidebar-header">Reports</li>
                 <li className="sidebar-item">
-                    <a className="sidebar-link">
+                    <a className="sidebar-link" onClick={contactAdmin}>
                         <FontAwesomeIcon className={"align-middle"} icon={faFileContract}/>
                         <span className="align-middle">Reports</span>
                     </a>
                 </li>
                 <li className="sidebar-item">
-                    <a className="sidebar-link">
+                    <a className="sidebar-link" onClick={contactAdmin}>
                         <FontAwesomeIcon className={"align-middle"} icon={faBalanceScale}/>
                         <span className="align-middle">Comparison</span>
                     </a>
@@ -86,9 +92,8 @@ const Sidebar = () => {
 
                     <div className="d-grid">
                         <a
-                            href="https://themes.getbootstrap.com/product/appstack-responsive-admin-template/"
+                            onClick={contactAdmin}
                             className="btn btn-primary"
-                            target="_blank"
                         >Download</a>
                     </div>
                 </div>

@@ -1,7 +1,8 @@
-import React, {Fragment} from "react";
+import React, {Fragment, useEffect} from "react";
 import {HashRouter, Switch, Route, Redirect} from "react-router-dom";
 import "jquery/dist/jquery.min";
-import "popper.js/dist/popper.min";
+import "@popperjs/core/lib/popper";
+import "popper.js/dist/popper";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "./assets/light.css";
 import "./user.css"
@@ -16,10 +17,15 @@ import OverView from "./modules/partner/overview/overView";
 import "sweetalert2/dist/sweetalert2.min.css";
 import {getCurrentUser} from "./services/user";
 import Funnel from "./pages/funnel/funnel";
+import {initDropDown} from "./utils/utils";
 
 function App() {
     const user = getCurrentUser();
     console.log("User", user)
+
+    useEffect(() => {
+        initDropDown();
+    }, [])
 
     return (
         <HashRouter>

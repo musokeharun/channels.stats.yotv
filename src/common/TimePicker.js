@@ -51,64 +51,59 @@ const TimePicker = ({handleRangeChange, onCancel}) => {
             return;
         }
         console.log("Applying");
-        handleRangeChange && handleRangeChange(start, end);
+        handleRangeChange(start, end);
     }
 
     return (
-        <div className={"row min-vw-100"}>
-            <h1 className={"text-center"}>{`Start ${start || "No start date"} : End ${end || "No End date"}`}</h1>
-            <div className={"col-md-6 mx-auto p-2"}>
-                <div className={"row"}>
-
-
-                    <div className={"col-7"}>
-                        <h6>Absolute time range</h6>
-                        <div className={"form-group mb-3"}>
-                            <label className={"d-block"}>From</label>
-                            <Flatpickr
-                                data-enable-time
-                                value={start}
-                                onChange={([date]) => {
-                                    setStart(date);
-                                }}
-                                maxDate={end}
-                            />
-                        </div>
-
-                        <div className={"form-group"}>
-                            <label className={"d-block"}>To</label>
-                            <Flatpickr
-                                data-enable-time
-                                value={end}
-                                onChange={([date]) => {
-                                    setEnd(date);
-                                }}
-                                minDate={start}
-                            />
-                        </div>
-                        <div className={"w-100 d-flex justify-content-center align-items-center my-3"}>
-                            <button className="btn btn-outline-warning w-25 mr-5 me-5" onClick={e => {
-                                onCancel && onCancel();
-                            }}>Cancel
-                            </button>
-                            <button className="btn btn-outline-primary w-25" onClick={handleApply}>Apply</button>
-                        </div>
-                    </div>
-                    <div className={"col-5 scrollbar h-100"}>
-                        <h6>Relative time range</h6>
-                        {
-                            actions && actions.map(([label, startFn, endFn], index) => {
-                                const handleClick = () => {
-                                    setStart(startFn(current).toJSDate())
-                                    setEnd(endFn(current).toJSDate())
-                                }
-                                return <TimeButton label={label} key={index} handleOnClick={handleClick}/>
-                            })
-                        }
-                    </div>
-
-
+        <div className={"row w-100 px-1"}>
+            <div
+                className={"col-12 text-center "}>{`${(start && start.toLocaleString()) || "N/A"} : ${(end && end.toLocaleString()) || "N/A"}`}</div>
+            <div className={"col-7 ps-md-4"}>
+                <h6>Absolute time range</h6>
+                <div className={"form-group mb-3 mx-auto"}>
+                    <label className={"d-block"}>From</label>
+                    <Flatpickr
+                        data-enable-time
+                        value={start}
+                        onChange={([date]) => {
+                            setStart(date);
+                        }}
+                        maxdate={end}
+                    />
                 </div>
+
+                <div className={"form-group"}>
+                    <label className={"d-block"}>To</label>
+                    <Flatpickr
+                        data-enable-time
+                        value={end}
+                        onChange={([date]) => {
+                            setEnd(date);
+                        }}
+                        mindate={start}
+                    />
+                </div>
+                <div className={"w-100 d-flex  justify-content-start align-items-center my-2"}>
+                    <button className="btn btn-outline-warning mr-5 me-5" onClick={e => {
+                        onCancel && onCancel();
+                    }}>Cancel
+                    </button>
+                    <button className="btn btn-outline-primary fs-sm" onClick={handleApply}>Apply</button>
+                </div>
+            </div>
+            <div style={{
+                maxHeight: "28vh"
+            }} className={"col-5 scrollbar h-100"}>
+                <h6>Relative time range</h6>
+                {
+                    actions && actions.map(([label, startFn, endFn], index) => {
+                        const handleClick = () => {
+                            setStart(startFn(current).toJSDate())
+                            setEnd(endFn(current).toJSDate())
+                        }
+                        return <TimeButton label={label} key={index} handleOnClick={handleClick}/>
+                    })
+                }
             </div>
         </div>
     );

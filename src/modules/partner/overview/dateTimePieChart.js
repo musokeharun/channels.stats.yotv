@@ -9,7 +9,7 @@ const DateTimePieChart = ({data, axisData}) => {
         options: {
             chart: {
                 width: "100%",
-                height: 350,
+                height: "50vh",
                 type: 'pie',
             },
             theme: {

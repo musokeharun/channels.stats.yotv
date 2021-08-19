@@ -8022,6 +8022,14 @@ textarea.form-control-lg {
     background-color: #3f80ea !important
 }
 
+.bg-yotv-dark {
+    background-color: #391C4F !important;
+}
+
+.bg-yotv {
+    background-color: #42205c !important;
+}
+
 .bg-secondary {
     background-color: #495057 !important
 }
@@ -16086,6 +16094,14 @@ body[data-layout=boxed] .wrapper {
 
 a.bg-primary-dark:focus, a.bg-primary-dark:hover, button.bg-primary-dark:focus, button.bg-primary-dark:hover {
     background-color: #149 !important
+}
+
+bg-purple-dark {
+    background-color: #391c4f !important
+}
+
+a.bg-purple-dark:focus, a.bg-purple-dark:hover, button.bg-purple-dark:focus, button.bg-purple-dark:hover {
+    background-color: #391c4f !important
 }
 
 .bg-primary-light {

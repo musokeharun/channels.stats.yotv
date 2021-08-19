@@ -55,7 +55,7 @@ let funnel = createSlice({
         setSelectedChannels: (state, action) => {
             state.selectedChannels = action.payload;
         },
-        setDate: (state, action) => {
+        setDates: (state, action) => {
             state.dates = action.payload;
         }
     },
@@ -112,12 +112,13 @@ export const fetchData = (body, prop) => async (dispatch, getState) => {
     }
 };
 
-export const {alterState, concat, setMax, setSelectedChannels} = funnel.actions;
+export const {alterState, concat, setMax, setSelectedChannels,setDates} = funnel.actions;
 export const selectMain = (state) => state.funnel.main;
 export const selectEpg = (state) => state.funnel.epg;
 export const selectMeta = (state) => state.funnel.meta;
 export const selectMostDay = (state) => state.funnel.mostDay;
 export const selectMostHour = (state) => state.funnel.mostHour;
 export const selectChannels = (state) => state.funnel.channels;
+export const selectSelectedRange = (state) => state.funnel.dates;
 export const getSelectedChannels = (state) => state.funnel.selectedChannels;
 export default funnel.reducer;
